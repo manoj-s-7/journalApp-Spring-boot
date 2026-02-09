@@ -1,18 +1,32 @@
 package com.manojs.journalapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@JsonPropertyOrder({ "id", "title", "content" })
+import java.time.LocalDateTime;
+
+@Document(collection = "Journal_Entry")
 public class JournalEntry {
-    private long id;
+    @Id
+    private ObjectId id;
     private String title;
     private String content;
+    private LocalDateTime date;
 
-    public long getId() {
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(final LocalDateTime date) {
+        this.date = date;
+    }
+
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final ObjectId id) {
         this.id = id;
     }
 
