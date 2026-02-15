@@ -1,0 +1,27 @@
+### Get all users
+
+GET {{host}}/users
+
+### Post users
+POST {{host}}/users
+Content-Type: application/json
+
+{
+  "userName": "John Doe",
+  "password": "Jhon@123"
+}
+
+### Get user by id
+GET {{host}}/users/699180fb4478068409d22603
+
+### Update user by id
+PUT {{host}}/users
+content-Type: application/json
+
+{
+  "userName": "John Doe",
+  "password": "Jhon@7845"
+}
+
+### Delete user by id
+DELETE {{host}}/users/6990b8e6f5d41802546d0eaf

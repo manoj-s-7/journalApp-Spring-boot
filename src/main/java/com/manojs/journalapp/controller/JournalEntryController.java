@@ -6,7 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,11 +37,11 @@ public class JournalEntryController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Optional<JournalEntry>> getid(@PathVariable ObjectId id) {
-        Optional<JournalEntry> entry = journalEntryService.getById(id);
+    public ResponseEntity<JournalEntry> getid(@PathVariable ObjectId id) {
+        JournalEntry entry = journalEntryService.getById(id).orElse(null);
 
-        if (entry.isEmpty()) {
-            return new ResponseEntity<>(Optional.empty(), HttpStatus.NOT_FOUND);
+        if (entry == null) {
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(entry);
     }
