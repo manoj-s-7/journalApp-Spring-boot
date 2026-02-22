@@ -1,9 +1,10 @@
 package com.manojs.journalapp.controller;
 
-import com.manojs.journalapp.entity.UserEntity;
+import com.manojs.journalapp.entity.User;
 import com.manojs.journalapp.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Optional;
 
 @RestController
@@ -24,19 +27,21 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<?> getusers(){
-        return ResponseEntity.ok(userService.getAllusers());
+    public ResponseEntity<Page<User>> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(userService.getAllUsers(PageRequest.of(page, size)));
     }
 
     @PostMapping
-    public ResponseEntity<UserEntity> saveUser(@RequestBody UserEntity userEntity){
-        UserEntity saved = userService.saveUser(userEntity);
+    public ResponseEntity<User> saveUser(@RequestBody User user) {
+        User saved = userService.saveUser(user);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable ObjectId id){
-        Optional<UserEntity> user = userService.gebytUserId(id);
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        Optional<User> user = userService.getUserById(id);
         if (user.isEmpty()){
             return new ResponseEntity<>(Optional.empty() ,HttpStatus.NOT_FOUND);
         }
@@ -44,17 +49,17 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable ObjectId id){
-        Optional<UserEntity> exists = userService.gebytUserId(id);
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        Optional<User> exists = userService.getUserById(id);
         if (exists.isEmpty()){
             return new ResponseEntity<>(Optional.empty(),HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(userService.deleteUser(id),HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateUser(@RequestBody UserEntity user){
-        UserEntity userByName = userService.findUserByName(user.getUserName());
+    @PutMapping(path = "/{userName}")
+    public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable String userName) {
+        User userByName = userService.findUserByName(userName);
         if (userByName!= null){
             userByName.setUserName(user.getUserName());
             userByName.setPassword(user.getPassword());
@@ -63,5 +68,4 @@ public class UserController {
         }
         return ResponseEntity.badRequest().body("Invalid Details");
     }
-
 }

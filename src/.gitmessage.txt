@@ -1,0 +1,14 @@
+<type>(<scope>): <short description>
+
+# Types:
+# feat     - new feature
+# fix      - bug fix
+# refactor - code refactoring
+# docs     - documentation
+# test     - adding tests
+# chore    - maintenance
+#
+# Rules:
+# - Use present tense
+# - Max 72 characters
+# - One logical change per commit

@@ -2,17 +2,17 @@
 GET {{host}}/journal
 
 ### Create Journal Entry
-POST {{host}}/journal
+POST {{host}}/journal/alice
 Content-Type: application/json
 
 {
   "title": "My First Entry",
   "content": "Today I started building my Spring Boot Journal App.",
-  "date": "2026-02-15T10:30:00"
+  "date": "2026-02-14T12:00:00"
 }
 
 ### Get Journal Entry By ID
-GET {{host}}/journal/699183d3cd50a5e4d955f48b
+GET {{host}}/journal?userName=Manoj
 
 ### Update Journal Entry
 PUT {{host}}/journal/699183d3cd50a5e4d955f48b
@@ -23,7 +23,6 @@ Content-Type: application/json
   "content": "I improved my API design today.",
   "date": "2026-02-15T18:00:00"
 }
-
 
 ### Delete Journal Entry
 DELETE {{host}}/journal/699183d3cd50a5e4d955f48b

@@ -1,9 +1,10 @@
 package com.manojs.journalapp.controller;
 
-import com.manojs.journalapp.entity.JournalEntry;
+import com.manojs.journalapp.entity.Journal;
+import com.manojs.journalapp.entity.User;
 import com.manojs.journalapp.service.JournalEntryService;
+import com.manojs.journalapp.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,30 +26,36 @@ public class JournalEntryController {
 
     private final JournalEntryService journalEntryService;
 
+    private UserService userService;
+
     @GetMapping
-    public ResponseEntity<List<JournalEntry>> getall() {
-        return ResponseEntity.ok(journalEntryService.getallEntries());
+    public ResponseEntity<List<Journal>> getall() {
+        return ResponseEntity.ok(journalEntryService.getAllEntries());
     }
 
-    @PostMapping
-    public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry journalEntry) {
-        JournalEntry saved = journalEntryService.saveEntity(journalEntry);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    @PostMapping(path = "/{userName}")
+    public ResponseEntity<Journal> createEntry(@RequestBody Journal journal, @PathVariable final String userName) {
+        try {
+            Journal saved = journalEntryService.saveEntity(journal, userName);
+            return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<JournalEntry> getid(@PathVariable ObjectId id) {
-        JournalEntry entry = journalEntryService.getById(id).orElse(null);
-
-        if (entry == null) {
+    @GetMapping(path = "/{userName}")
+    public ResponseEntity<List<Journal>> getAllJournalEntriesOfUser(@PathVariable String userName) {
+        User userByName = userService.findUserByName(userName);
+        if (userByName == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(entry);
+        List<Journal> journalEntries = userByName.getJournalEntries();
+        return ResponseEntity.ok(journalEntries);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> deleteentry(@PathVariable ObjectId id) {
-        Optional<JournalEntry> entry = journalEntryService.getById(id);
+    public ResponseEntity<?> deleteentry(@PathVariable Long id) {
+        Optional<Journal> entry = journalEntryService.getById(id);
 
         if (entry.isEmpty()) {
             return new ResponseEntity<>("Journal entry not found", HttpStatus.NOT_FOUND);
@@ -59,8 +66,8 @@ public class JournalEntryController {
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<?> putentry(@PathVariable ObjectId id, @RequestBody JournalEntry newEntry) {
-        JournalEntry updated = journalEntryService.updateData(id, newEntry);
+    public ResponseEntity<?> putentry(@PathVariable Long id, @RequestBody Journal newEntry) {
+        Journal updated = journalEntryService.updateData(id, newEntry);
 
         if (updated == null) {
             return new ResponseEntity<>("Journal entry not found", HttpStatus.NOT_FOUND);
