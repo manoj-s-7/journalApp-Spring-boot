@@ -26,7 +26,7 @@ public class JournalEntryController {
 
     private final JournalEntryService journalEntryService;
 
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<List<Journal>> getall() {
@@ -37,7 +37,7 @@ public class JournalEntryController {
     public ResponseEntity<Journal> createEntry(@RequestBody Journal journal, @PathVariable final String userName) {
         try {
             Journal saved = journalEntryService.saveEntity(journal, userName);
-            return new ResponseEntity<>(saved, HttpStatus.CREATED);
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -53,22 +53,22 @@ public class JournalEntryController {
         return ResponseEntity.ok(journalEntries);
     }
 
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> deleteentry(@PathVariable Long id) {
+    @DeleteMapping(path = "/{username}/{id}")
+    public ResponseEntity<?> deleteEntry(@PathVariable Long id, @PathVariable final String username) {
+
         Optional<Journal> entry = journalEntryService.getById(id);
 
         if (entry.isEmpty()) {
             return new ResponseEntity<>("Journal entry not found", HttpStatus.NOT_FOUND);
         }
 
-        journalEntryService.deleteById(id);
+        journalEntryService.deleteById(id, username);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping(path = "/{id}")
-    public ResponseEntity<?> putentry(@PathVariable Long id, @RequestBody Journal newEntry) {
-        Journal updated = journalEntryService.updateData(id, newEntry);
-
+    @PutMapping(path = "/{username}/{id}")
+    public ResponseEntity<?> putEntry(@PathVariable Long id, @RequestBody Journal newEntry, @PathVariable final String username) {
+        Journal updated = journalEntryService.updateData(id, username, newEntry);
         if (updated == null) {
             return new ResponseEntity<>("Journal entry not found", HttpStatus.NOT_FOUND);
         }

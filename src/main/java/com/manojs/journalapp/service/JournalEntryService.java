@@ -19,8 +19,11 @@ public class JournalEntryService {
     private final JournalEntryRepo journalEntryRepo;
     private final UserService userService;
 
-    public Journal saveEntity(Journal journal, String userName) {
+    public Journal saveEntity(Journal journal, String userName) throws Exception {
         User user = userService.findUserByName(userName);
+        if (user == null) {
+            throw new Exception("user not found: " + userName);
+        }
         journal.setDate(LocalDateTime.now());
         journal.setUser(user);
         Journal savedJournal = journalEntryRepo.save(journal);
@@ -37,21 +40,19 @@ public class JournalEntryService {
         return journalEntryRepo.findById(id);
     }
 
-    public boolean deleteById(Long id) {
+    public void deleteById(Long id, String username) {
 
-        Optional<Journal> journal = journalEntryRepo.findById(id);
+        Optional<Journal> journal = journalEntryRepo.findByIdAndUsername(id, username);
 
         if (journal.isEmpty()) {
-            return false;
+            return;
         }
 
         journalEntryRepo.delete(journal.get());
-        return true;
     }
 
-    public Journal updateData(Long id, Journal newEntry) {
-
-        Optional<Journal> optionalJournal = journalEntryRepo.findById(id);
+    public Journal updateData(Long id, String username, Journal newEntry) {
+        Optional<Journal> optionalJournal = journalEntryRepo.findByIdAndUsername(id, username);
 
         if (optionalJournal.isEmpty()) {
             return null;
@@ -62,7 +63,6 @@ public class JournalEntryService {
         if (newEntry.getTitle() != null && !newEntry.getTitle().isBlank()) {
             existing.setTitle(newEntry.getTitle());
         }
-
         if (newEntry.getContent() != null && !newEntry.getContent().isBlank()) {
             existing.setContent(newEntry.getContent());
         }

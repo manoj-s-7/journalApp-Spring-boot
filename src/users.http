@@ -1,0 +1,27 @@
+### Get all users
+
+GET {{host}}/users?page=1&size=1
+
+### Post users
+POST {{host}}/users
+Content-Type: application/json
+
+{
+  "userName": "Manoj",
+  "password": "Manoj@123"
+}
+
+### Get user by id
+GET {{host}}/users/1
+
+### Update user by id
+PUT {{host}}/users/Manoj S
+content-Type: application/json
+
+{
+  "userName": "Manoj",
+  "password": "Manoj@7953"
+}
+
+### Delete user by id
+DELETE {{host}}/users/4
