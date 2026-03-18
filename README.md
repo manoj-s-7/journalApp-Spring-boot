@@ -1,1 +1,1 @@
-## Journal App
+## Journal Entry Rest API
